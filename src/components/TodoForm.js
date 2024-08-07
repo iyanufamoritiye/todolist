@@ -1,8 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-const TodoForm = ({ onSubmit }) => {
-  const [title, setTitle] = useState("");
-  const [completed, setCompleted] = useState(false);
+const TodoForm = ({ initialTodo, onSubmit }) => {
+  const [title, setTitle] = useState(initialTodo ? initialTodo.title : "");
+  const [completed, setCompleted] = useState(
+    initialTodo ? initialTodo.completed : false
+  );
+
+  useEffect(() => {
+    if (initialTodo) {
+      setTitle(initialTodo.title);
+      setCompleted(initialTodo.completed);
+    }
+  }, [initialTodo]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
