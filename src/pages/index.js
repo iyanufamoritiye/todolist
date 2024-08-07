@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { fetchTodos, createTodo, deleteTodo } from "../../components/utils/api";
-import TodoForm from "./components/TodoForm";
-import TodoItem from "./components/TodoItem";
+import { fetchTodos, createTodo, deleteTodo } from "../utils/api";
+import TodoForm from "../components/TodoForm";
+import TodoItem from "../components/TodoItem";
 
 const Home = () => {
   const [todos, setTodos] = useState([]);
