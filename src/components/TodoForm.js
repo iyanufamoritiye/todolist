@@ -22,13 +22,14 @@ const TodoForm = ({ onSubmit }) => {
         placeholder="Title"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
-        className="p-2 border rounded w-full"
+        className="p-2 border rounded w-full text-gray-950 "
       />
-      <label className="flex items-center gap-2">
+      <label className="flex items-center text-gray-950  gap-2">
         <input
           type="checkbox"
           checked={completed}
           onChange={(e) => setCompleted(e.target.checked)}
+          className="text-gray-950 "
         />
         Completed
       </label>

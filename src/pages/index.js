@@ -26,11 +26,18 @@ const Home = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4 text-center">Todo List</h1>
-      <TodoForm onSubmit={addTodo} />
+      <h1 className="text-2xl font-bold mb-4  text-gray-950 text-center">
+        Todo List
+      </h1>
+      <TodoForm onSubmit={addTodo} className="text-gray-950 " />
       <div className="mt-4 space-y-4 ">
         {todos.map((todo) => (
-          <TodoItem key={todo.id} todo={todo} onDelete={deleteTodoItem} />
+          <TodoItem
+            key={todo.id}
+            todo={todo}
+            onDelete={deleteTodoItem}
+            className="text-gray-950 "
+          />
         ))}
       </div>
     </div>

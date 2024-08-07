@@ -2,7 +2,7 @@ import Link from "next/link";
 
 const TodoItem = ({ todo, onDelete }) => {
   return (
-    <div className="flex justify-between   items-center gap-4 p-4 border-4  bg-white  rounded w-full sm:w-2/3 lg:w-1/2 mx-auto">
+    <div className="flex justify-between text-gray-950   items-center gap-4 p-4 border-4  bg-white  rounded w-full sm:w-2/3 lg:w-1/2 mx-auto">
       <div>
         <h3 className={`${todo.completed ? "line-through" : ""}`}>
           {todo.title}
