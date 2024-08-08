@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import { fetchTodoById } from "../../utils/api";
+import { getTodosFromLocalStorage } from "@/utils/localStorage";
 
 const TodoDetail = () => {
   const router = useRouter();
@@ -12,8 +13,14 @@ const TodoDetail = () => {
     if (id) {
       const getTodo = async () => {
         try {
-          const todo = await fetchTodoById(id);
-          setTodo(todo);
+          const todos = getTodosFromLocalStorage();
+          const localTodo = todos.find((t) => t.id === parseInt(id, 10));
+          if (localTodo) {
+            setTodo(localTodo);
+          } else {
+            const fetchedTodo = await fetchTodoById(id);
+            setTodo(fetchedTodo);
+          }
         } catch (error) {
           console.error("Failed to fetch todo:", error);
         } finally {
@@ -24,13 +31,8 @@ const TodoDetail = () => {
     }
   }, [id]);
 
-  const handleEdit = async (updatedTodo) => {
-    try {
-      await updateTodo(id, updatedTodo);
-      router.push(`/todos/${id}`);
-    } catch (error) {
-      console.error("Failed to update todo:", error);
-    }
+  const handleGoBack = () => {
+    router.push("/");
   };
 
   if (loading) return <div>Loading...</div>;
@@ -51,7 +53,7 @@ const TodoDetail = () => {
           </p>
         </div>
         <button
-          onClick={() => router.push("/")}
+          onClick={handleGoBack}
           className="mt-4 p-2 bg-gray-500 text-white rounded"
         >
           Go Back
