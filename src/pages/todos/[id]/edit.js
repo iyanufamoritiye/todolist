@@ -41,8 +41,6 @@ const EditTodo = () => {
         todo.id === parseInt(id, 10) ? updated : todo
       );
       saveTodosToLocalStorage(updatedTodos);
-
-      // Redirect to the todo detail page
       router.push(`/todos/${id}`);
     } catch (error) {
       console.error("Failed to update todo:", error);
