@@ -1,7 +1,6 @@
 const TODOS_KEY = "todos";
 const LAST_ID_KEY = "lastTodoId";
 
-// Check if window is defined (client-side check)
 const isClient = typeof window !== "undefined";
 
 // Initialize the last ID in localStorage if it doesn't exist
@@ -53,7 +52,6 @@ export const updateTodoInLocalStorage = (id, updatedTodo) => {
     console.warn("localStorage is not available.");
   }
 };
-
 // Delete a todo from localStorage
 export const deleteTodoFromLocalStorage = (id) => {
   if (isClient) {
@@ -62,7 +60,6 @@ export const deleteTodoFromLocalStorage = (id) => {
   }
 };
 
-// Initialize the last ID when the script is loaded
 if (isClient) {
   initializeLastId();
 }

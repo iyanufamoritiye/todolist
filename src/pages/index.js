@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import TodoForm from "../components/TodoForm";
 import TodoItem from "../components/TodoItem";
-import { v4 as uuidv4 } from "uuid";
 import { fetchTodos, createTodo, updateTodo, deleteTodo } from "@/utils/api";
 import {
+  getNextUniqueId,
   getTodosFromLocalStorage,
   saveTodosToLocalStorage,
 } from "@/utils/localStorage";
@@ -18,25 +18,50 @@ const Home = () => {
     };
     loadTodos();
   }, []);
-  const addTodo = async (todo) => {
-    const newTodo = await createTodo(todo); // Create and save the todo
-    setTodos((prevTodos) => [newTodo, ...prevTodos]); // Add the new todo to the existing list
+
+  const addTodo = (todo) => {
+    const duplicateTodo = todos.find(
+      (existingTodo) => existingTodo.title === todo.title
+    );
+
+    if (duplicateTodo) {
+      console.error("Todo with this title already exists.");
+      return; // Prevent adding a duplicate todo
+    }
+    const newTodo = { ...todo, id: getNextUniqueId(todos) };
+    const updatedTodos = [newTodo, ...todos];
+    saveTodosToLocalStorage(updatedTodos);
+    setTodos(updatedTodos);
   };
 
   const handleUpdateTodo = async (id, updatedTodo) => {
-    const updated = await updateTodo(id, updatedTodo); // Update in API
-    const todos = getTodosFromLocalStorage(); // Update localStorage
-    const updatedTodos = todos.map((todo) => (todo.id === id ? updated : todo));
-    saveTodosToLocalStorage(updatedTodos);
-    setTodos(updatedTodos); // Update state with the latest list
+    try {
+      const updated = await updateTodo(id, updatedTodo);
+      setTodos((prevTodos) =>
+        prevTodos.map((todo) => (todo.id === id ? updated : todo))
+      );
+      const todosFromLocalStorage = getTodosFromLocalStorage();
+      const updatedLocalTodos = todosFromLocalStorage.map((todo) =>
+        todo.id === id ? updated : todo
+      );
+      saveTodosToLocalStorage(updatedLocalTodos);
+    } catch (error) {
+      console.error("Failed to update todo:", error);
+    }
   };
 
   const handleDeleteTodo = async (id) => {
-    await deleteTodo(id); // Remove from API
-    const todos = getTodosFromLocalStorage(); // Update localStorage
-    const updatedTodos = todos.filter((todo) => todo.id !== id);
-    saveTodosToLocalStorage(updatedTodos);
-    setTodos(updatedTodos); // Update state with the latest list
+    try {
+      await deleteTodo(id);
+      setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id));
+      const todosFromLocalStorage = getTodosFromLocalStorage();
+      const updatedLocalTodos = todosFromLocalStorage.filter(
+        (todo) => todo.id !== id
+      );
+      saveTodosToLocalStorage(updatedLocalTodos);
+    } catch (error) {
+      console.error("Failed to delete todo:", error);
+    }
   };
 
   return (
