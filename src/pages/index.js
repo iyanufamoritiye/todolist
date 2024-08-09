@@ -10,6 +10,7 @@ import {
 
 const Home = () => {
   const [todos, setTodos] = useState([]);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const loadTodos = async () => {
@@ -25,13 +26,14 @@ const Home = () => {
     );
 
     if (duplicateTodo) {
-      console.error("Todo with this title already exists.");
+      setError("Todo with this title already exists.");
       return;
     }
     const newTodo = { ...todo, id: getNextUniqueId(todos) };
     const updatedTodos = [newTodo, ...todos];
     saveTodosToLocalStorage(updatedTodos);
     setTodos(updatedTodos);
+    setError("");
   };
 
   const handleUpdateTodo = async (id, updatedTodo) => {
@@ -47,6 +49,7 @@ const Home = () => {
       saveTodosToLocalStorage(updatedLocalTodos);
     } catch (error) {
       console.error("Failed to update todo:", error);
+      setError("Failed to update todo:");
     }
   };
 
