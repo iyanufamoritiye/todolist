@@ -3,8 +3,8 @@ import {
   getTodosFromLocalStorage,
   saveTodosToLocalStorage,
   getNextUniqueId,
-  updateTodoInLocalStorage,
   deleteTodoFromLocalStorage,
+  updateTodoInLocalStorage,
 } from "./localStorage"; // Adjust the path according to your file structure
 
 const API_URL = "https://jsonplaceholder.typicode.com/todos";
@@ -41,23 +41,37 @@ export const createTodo = async (todo) => {
   return newTodo;
 };
 
-// Update an existing todo
-export const updateTodo = async (id, updatedTodo) => {
+export const updateTodoInApi = async (id, updatedTodo) => {
   try {
-    const todoId = parseInt(id, 10);
-    const todos = getTodosFromLocalStorage();
-    const updatedTodos = todos.map((todo) =>
-      todo.id === todoId ? { ...updatedTodo, id: todoId } : todo
-    );
-    saveTodosToLocalStorage(updatedTodos);
-    const response = await axios.put(`${API_URL}/${todoId}`, updatedTodo);
+    const response = await axios.put(`${API_URL}/${id}`, updatedTodo);
     if (response.status === 200) {
       return response.data;
     } else {
       throw new Error(`Failed to update todo on API: ${response.status}`);
     }
   } catch (error) {
-    console.error("Failed to update todo:", error);
+    console.error("Failed to update todo on API:", error);
+    throw error;
+  }
+};
+
+export const updateTodo = async (id, updatedTodo, updateType) => {
+  try {
+    if (updateType === "api") {
+      const updated = await updateTodoInApi(id, updatedTodo);
+      return updated;
+    } else if (updateType === "local") {
+      updateTodoInLocalStorage(id, updatedTodo);
+      return updatedTodo;
+    } else if (updateType === "both") {
+      const updated = await updateTodoInApi(id, updatedTodo);
+      updateTodoInLocalStorage(id, updated);
+      return updated;
+    } else {
+      throw new Error(`Unknown updateType: ${updateType}`);
+    }
+  } catch (error) {
+    console.error(`Failed to update todo (${updateType}):`, error);
     throw error;
   }
 };

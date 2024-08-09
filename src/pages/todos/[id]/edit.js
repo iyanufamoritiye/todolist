@@ -1,7 +1,7 @@
 // pages/todos/[id]/edit.js
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
-import { fetchTodoById, updateTodo } from "../../../utils/api";
+import { fetchTodoById, updateTodo, updateTodoInApi } from "../../../utils/api";
 import TodoForm from "../../../components/TodoForm";
 import {
   getTodosFromLocalStorage,
@@ -18,8 +18,8 @@ const EditTodo = () => {
     if (id) {
       const getTodo = async () => {
         try {
-          const todo = await fetchTodoById(id);
-          setTodo(todo);
+          const fetchedTodo = await fetchTodoById(id);
+          setTodo(fetchedTodo);
         } catch (error) {
           console.error("Failed to fetch todo:", error);
         } finally {
@@ -32,15 +32,15 @@ const EditTodo = () => {
 
   const handleEdit = async (updatedTodo) => {
     try {
-      // Update the todo in the API
-      const updated = await updateTodo(id, updatedTodo);
-
-      // Update the todo in localStorage
-      const todos = getTodosFromLocalStorage();
-      const updatedTodos = todos.map((todo) =>
-        todo.id === parseInt(id, 10) ? updated : todo
+      const todosFromLocal = getTodosFromLocalStorage();
+      const isFromLocal = todosFromLocal.some(
+        (todo) => todo.id === parseInt(id, 10)
       );
-      saveTodosToLocalStorage(updatedTodos);
+      if (isFromLocal) {
+        await updateTodo(id, updatedTodo, "local");
+      } else {
+        await updateTodo(id, updatedTodo, "api");
+      }
       router.push(`/todos/${id}`);
     } catch (error) {
       console.error("Failed to update todo:", error);

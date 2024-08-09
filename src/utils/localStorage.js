@@ -40,16 +40,17 @@ export const saveTodosToLocalStorage = (todos) => {
 
 // Update a todo in localStorage
 export const updateTodoInLocalStorage = (id, updatedTodo) => {
-  if (isClient) {
+  if (typeof window !== "undefined") {
     const todos = getTodosFromLocalStorage();
     const index = todos.findIndex((todo) => todo.id === id);
-
     if (index !== -1) {
-      todos[index] = updatedTodo;
+      todos[index] = { ...updatedTodo, id }; // Ensure the ID is preserved
       saveTodosToLocalStorage(todos);
     } else {
       console.warn(`Todo with id ${id} not found in localStorage.`);
     }
+  } else {
+    console.warn("localStorage is not available.");
   }
 };
 

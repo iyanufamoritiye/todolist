@@ -3,6 +3,10 @@ import TodoForm from "../components/TodoForm";
 import TodoItem from "../components/TodoItem";
 import { v4 as uuidv4 } from "uuid";
 import { fetchTodos, createTodo, updateTodo, deleteTodo } from "@/utils/api";
+import {
+  getTodosFromLocalStorage,
+  saveTodosToLocalStorage,
+} from "@/utils/localStorage";
 
 const Home = () => {
   const [todos, setTodos] = useState([]);
@@ -14,32 +18,25 @@ const Home = () => {
     };
     loadTodos();
   }, []);
-
   const addTodo = async (todo) => {
-    try {
-      const newTodo = await createTodo(todo);
-      setTodos([newTodo, ...todos]);
-    } catch (error) {
-      console.error("Error adding todo:", error);
-    }
+    const newTodo = await createTodo(todo); // Create and save the todo
+    setTodos((prevTodos) => [newTodo, ...prevTodos]); // Add the new todo to the existing list
   };
 
   const handleUpdateTodo = async (id, updatedTodo) => {
-    try {
-      const updated = await updateTodo(id, updatedTodo);
-      setTodos(todos.map((todo) => (todo.id === id ? updated : todo)));
-    } catch (error) {
-      console.error("Error updating todo:", error);
-    }
+    const updated = await updateTodo(id, updatedTodo); // Update in API
+    const todos = getTodosFromLocalStorage(); // Update localStorage
+    const updatedTodos = todos.map((todo) => (todo.id === id ? updated : todo));
+    saveTodosToLocalStorage(updatedTodos);
+    setTodos(updatedTodos); // Update state with the latest list
   };
 
   const handleDeleteTodo = async (id) => {
-    try {
-      await deleteTodo(id);
-      setTodos(todos.filter((todo) => todo.id !== id));
-    } catch (error) {
-      console.error("Error deleting todo:", error);
-    }
+    await deleteTodo(id); // Remove from API
+    const todos = getTodosFromLocalStorage(); // Update localStorage
+    const updatedTodos = todos.filter((todo) => todo.id !== id);
+    saveTodosToLocalStorage(updatedTodos);
+    setTodos(updatedTodos); // Update state with the latest list
   };
 
   return (
