@@ -26,7 +26,7 @@ const Home = () => {
 
     if (duplicateTodo) {
       console.error("Todo with this title already exists.");
-      return; // Prevent adding a duplicate todo
+      return;
     }
     const newTodo = { ...todo, id: getNextUniqueId(todos) };
     const updatedTodos = [newTodo, ...todos];
